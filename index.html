@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<script src=algor.js></script>
+
+<body>
+
+    <canvas id="myCanvas" width="300" height="80" style="border:1px solid #d3d3d3;"></canvas>
+    <br>
+    <h1 id='algoName'>Fun With Algorithms!</h1>
+    <button onclick="stopMaze()" type="button">Generate Start and Stop</button>
+    <input type="text" class="gMaze" onkeydown="generateMaze(this)">
+    <br>
+    <canvas id="algo" width="700" height="700" style="border:1px solid #d3d3d3;"></canvas>
+
+    <script>
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        ctx.font = "30px Georgia";
+        ctx.strokeText("Fun with Algorithms!", 10, 50);
+    </script>
+    <script>
+        var c = document.getElementById("algo");
+        var ctx = c.getContext("2d");
+
+        var board = []
+        for (var i = 0; i < 50; i++) {
+            var row = []
+            for (var j = 0; j < 50; j++) {
+                //console.log("coords: " + i + ", " + j);
+                row.push(new Node(i, j, "black", false, false, false, "Breadth-first Search"));
+            }
+            board.push(row);
+        }
+
+        var hasAStart = false;
+        var hasAFinish = false;
+        var isMaze = true;
+        var flag = false;
+        var startX = 0;
+        var startY = 0;
+
+        function stopMaze() {
+            isMaze = false;
+        }
+
+        function generateMaze(ele) {
+
+            if (event.key === 'Enter') {
+                clearFullBoard();
+                isMaze = false;
+
+                var numCovered = parseInt(ele.value);
+
+                if (numCovered > 2500) {
+                    numCovered = 0;
+                }
+
+                for (var i = 0; i < numCovered; i++) {
+                    var randomX = Math.floor(Math.random() * 50);
+                    var randomY = Math.floor(Math.random() * 50);
+                    isTaken = false;
+                    do {
+                        if (board[randomX][randomY].visited) {
+                            randomX = Math.floor(Math.random() * 50);
+                            randomY = Math.floor(Math.random() * 50);
+                        } else {
+                            board[randomX][randomY].visited = true;
+                            board[randomX][randomY].color = "purple";
+                            isTaken = true;
+                        }
+                    } while (!isTaken);
+                }
+                drawBoard();
+            }
+        }
+
+        function getNodeFromMouse(canvas, event, res) {
+            if (res == 'down') {
+                flag = true;
+                let rect = canvas.getBoundingClientRect();
+                let x = event.clientX - rect.left;
+                let y = event.clientY - rect.top;
+                console.log("Coordinate x: " + x,
+                    "Coordinate y: " + y);
+                thisX = Math.trunc(x / 14);
+                thisY = Math.trunc(y / 14);
+                if (isMaze) {
+                    board[thisX][thisY].visited = true;
+                    board[thisX][thisY].color = 'purple';
+                    drawBoard();
+                } else if (!board[thisX][thisY].visited) {
+                    if (!hasAStart && !hasAFinish) {
+                        hasAStart = true;
+                        startX = thisX;
+                        startY = thisY;
+                        board[thisX][thisY].visited = true;
+                        board[thisX][thisY].isStart = true;
+                        board[thisX][thisY].color = 'red';
+                        drawBoard();
+                    } else if (hasAStart && !hasAFinish) {
+                        hasAFinish = true;
+                        board[thisX][thisY].isFinish = true;
+                        board[thisX][thisY].color = 'blue';
+                        drawBoard();
+                        document.getElementById("algoName").innerHTML = board[0][0].algorithm;
+                        breadthFirst(startX, startY, board);
+                    }
+                }
+            }
+            if (res == "up" || res == "out") {
+                flag = false;
+            }
+            if (res == 'move') {
+                if (flag) {
+                    let rect = canvas.getBoundingClientRect();
+                    let x = event.clientX - rect.left;
+                    let y = event.clientY - rect.top;
+                    console.log("Coordinate x: " + x,
+                        "Coordinate y: " + y);
+                    thisX = Math.trunc(x / 14);
+                    thisY = Math.trunc(y / 14);
+                    if (isMaze) {
+                        board[thisX][thisY].visited = true;
+                        board[thisX][thisY].color = 'purple';
+                        drawBoard();
+                    }
+                }
+            }
+        }
+
+        let canvasElem = document.querySelector("#algo");
+
+        canvasElem.addEventListener("mousedown", function(e) {
+            getNodeFromMouse(canvasElem, e, "down");
+        });
+        canvasElem.addEventListener("mousemove", function(e) {
+            getNodeFromMouse(canvasElem, e, "move");
+        });
+        canvasElem.addEventListener("mouseup", function(e) {
+            getNodeFromMouse(canvasElem, e, "up");
+        });
+        canvasElem.addEventListener("mouseout", function(e) {
+            getNodeFromMouse(canvasElem, e, "out");
+        });
+
+        drawBoard();
+    </script>
+
+</body>
+
+</html>
