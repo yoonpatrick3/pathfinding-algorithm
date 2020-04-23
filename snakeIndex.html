@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <button onclick="runAIinit()" type="button">Run AI</button>
+    <button onclick="stopGame()" type="button">Stop Game</button>
+    <br>
+    <canvas id="snakeBoard" width="500" height="500" style="border:1px solid #d3d3d3;"></canvas>
+    <script src="snake.js"></script>
+
+    <script>
+        let snake = new Snake(0, 0, [
+            [24, 24]
+        ]);
+
+        let d;
+
+        let letBotRunGame = false;
+
+        let apple = spawnApple();
+
+        var c = document.getElementById("snakeBoard");
+        var ctx = c.getContext("2d");
+
+        //board[snake.body[0][0]][snake.body[0][1]] = 1;
+        drawBoard();
+
+        let game;
+
+        function changeDirection(ele) {
+            var key = ele.key;
+
+            if (key == 'ArrowUp') {
+                d = "U";
+            } else if (key == 'ArrowDown') {
+                d = "D";
+            } else if (key == 'ArrowRight') {
+                d = "R";
+            } else if (key == 'ArrowLeft') {
+                d = "L";
+            }
+        }
+
+        let canvasElem = document.querySelector("#snakeBoard");
+        canvasElem.setAttribute("tabindex", 0);
+
+        canvasElem.addEventListener("keydown", function(e) {
+            changeDirection(e);
+        });
+
+        canvasElem.addEventListener("mousedown", function(e) {
+            game = setInterval(update, 1);
+        });
+
+        function stopGame() {
+            clearInterval(game);
+        }
+    </script>
+</body>
+
+</html>

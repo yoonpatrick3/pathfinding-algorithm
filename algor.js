@@ -139,27 +139,6 @@ async function depthFirstRecur(thisX, thisY, board) {
     }
 }
 
-function changeBoardWithCosts(startX, startY, finishX, finishY, board) {
-    Node.prototype.cost = 0
-    for (var i = 0; i < board.length; i++) {
-        for (var j = 0; j < board[0].length; j++) {
-            if (!board[i][j].visited) {
-                // distance between current node and start node
-                var g = Math.abs(startX - i) + Math.abs(startY - j);
-
-                // estimated distance from current node to end node
-                var h = Math.pow(finishX - i, 2) + Math.pow(finishY - j, 2);
-
-                // total cost of the node
-                var f = g + h;
-                board[i][j].cost = f;
-            }
-        }
-    }
-
-    return board;
-}
-
 async function astar(startX, startY, finishX, finishY, board) {
     document.getElementById("algoName").innerHTML = board[0][0].algorithm;
 
